@@ -1,4 +1,1 @@
 # Kriptografi
-# CARLOANJING
-# HANNYANJING
-# WOI
