@@ -1,0 +1,27 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  textarea {
+    width: 100%;
+    height: 100px;
+  }
+  
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 5px;
+  }
+  
+  .section {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    font-weight: bold;
+  }
+  
+  .matrix-input {
+    width: 50px;
+  }
+  
