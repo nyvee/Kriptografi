@@ -30,7 +30,7 @@
     <label>Pesan (Plaintext/Ciphertext):</label>
     <textarea id="textInput" placeholder="Tulis pesan di sini atau upload file..."></textarea>
     <br>
-    <input type="file" id="fileInput">
+    <input type="file" id="fileInput" onchange="processFileInput()">
   </div>
 
   <div class="section">
@@ -42,11 +42,9 @@
   </div>
 
   <div class="section">
-    <button onclick="processEncryption()">Enkripsi</button>
-    <button onclick="processDecryption()">Dekripsi</button>
-    <button onclick="processFileEncryption()">Enkripsi File</button>
-    <button onclick="processFileDecryption()">Dekripsi File</button>
-    <button onclick="downloadText()">Simpan Cipherteks ke File</button>
+    <button onclick="processEncryption()">Encrypt</button>
+    <button onclick="processDecryption()">Decrypt</button>
+    <button onclick="downloadText()">Save</button>
   </div>
 
   <div class="section">
