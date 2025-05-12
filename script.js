@@ -1,3 +1,43 @@
+const cipherHints = {
+  vigenere: {
+    placeholder: "Contoh: SECRET",
+    hint: "Gunakan huruf saja, contoh: SECRET"
+  },
+  autokey: {
+    placeholder: "Contoh: KEY",
+    hint: "Gunakan huruf saja, contoh: KEY"
+  },
+  extended: {
+    placeholder: "Contoh: ACC, mySecretKey",
+    hint: "Bisa berupa karakter apapun, contoh: ACC, mySecretKey"
+  },
+  affine: {
+    placeholder: "Contoh: 5,8",
+    hint: "Masukkan dua bilangan bulat, contoh: 5,8"
+  },
+  playfair: {
+    placeholder: "Contoh: MONARCHY",
+    hint: "Gunakan huruf saja, contoh: MONARCHY"
+  },
+  hill: {
+    placeholder: "Contoh: 3,3,2,5",
+    hint: "Masukkan matriks 2x2 (4 angka dipisahkan koma), contoh: 3,3,2,5"
+  }
+};
+
+function updateKeyHint() {
+  const cipher = document.getElementById("cipherSelect").value;
+  const keyInput = document.getElementById("keyInput");
+  const keyHint = document.getElementById("keyHint");
+  keyInput.placeholder = cipherHints[cipher].placeholder;
+  keyHint.textContent = cipherHints[cipher].hint;
+}
+
+// Initial set
+updateKeyHint();
+
+document.getElementById("cipherSelect").addEventListener("change", updateKeyHint);
+
 // 1. Vigenère Standard
 function vigenereEncrypt(plain, key) {
   const P = normalizeText(plain);
@@ -200,7 +240,6 @@ function hillDecrypt(cipher, matrix) {
   const det = matrix[0]*matrix[3] - matrix[1]*matrix[2];
   const invDet = modInverse(det, 26);
   if (invDet === null) throw new Error('Hill matrix not invertible mod 26');
-  // adjugate
   const invMatrix = [
     ( matrix[3]*invDet) %26,
     ((-matrix[1]+26)*invDet) %26,
@@ -240,19 +279,34 @@ function processFileInput() {
 
   const reader = new FileReader();
   reader.onload = function (e) {
-    const content = e.target.result; // Read file content as text
-    document.getElementById("textInput").value = content; // Display content in the text box
-    fileInput.setAttribute("data-filename", file.name); // Store the file name in a custom attribute
+    const content = e.target.result;
+    const isImage = file.type.startsWith("image/");
+
+    if (isImage) {
+      const bytes = new Uint8Array(content);
+      fileInput.setAttribute("data-bytes", JSON.stringify(Array.from(bytes)));
+      document.getElementById("textInput").value = `File gambar '${file.name}' siap untuk dienkripsi.`;
+    } else {
+      document.getElementById("textInput").value = content;
+      fileInput.removeAttribute("data-bytes");
+    }
+
+    fileInput.setAttribute("data-filename", file.name);
   };
-  reader.readAsText(file); // Read file as text
+
+  if (file.type.startsWith("image/")) {
+    reader.readAsArrayBuffer(file);
+  } else {
+    reader.readAsText(file);
+  }
 }
 
 // Clear file name when text is edited
 document.getElementById("textInput").addEventListener("input", function () {
   const fileInput = document.getElementById("fileInput");
   if (fileInput.getAttribute("data-filename")) {
-    fileInput.removeAttribute("data-filename"); // Clear the stored file name
-    fileInput.value = ""; // Reset the file input field
+    fileInput.removeAttribute("data-filename");
+    fileInput.value = "";
   }
 });
 
@@ -261,8 +315,12 @@ document.getElementById("textInput").addEventListener("input", function () {
 function processEncryption() {
   const cipherType = document.getElementById("cipherSelect").value;
   const keyInput = document.getElementById("keyInput").value;
-  const text = document.getElementById("textInput").value.trim(); // Get text from the text box
+  const text = document.getElementById("textInput").value.trim();
   const formatOpt = document.getElementById("cipherTextFormat").value;
+  const fileInput = document.getElementById("fileInput");
+  const fileName = fileInput.getAttribute("data-filename");
+  const dataBytes = fileInput.getAttribute("data-bytes");
+
   let result = '';
 
   if (!text) {
@@ -278,9 +336,24 @@ function processEncryption() {
       result = autoKeyEncrypt(text, keyInput);
       break;
     case "extended":
-      const bytes = new Uint8Array(Array.from(text).map(c => c.charCodeAt(0)));
-      const encBytes = extendedVigenereEncrypt(bytes, keyInput);
-      result = Array.from(encBytes).map(b => String.fromCharCode(b)).join('');
+      if (dataBytes) {
+        const bytes = new Uint8Array(JSON.parse(dataBytes));
+        const encBytes = extendedVigenereEncrypt(bytes, keyInput);
+        const blob = new Blob([encBytes]);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName ? `encrypted_${fileName}` : "encrypted_file";
+        a.click();
+        URL.revokeObjectURL(url);
+        fileInput.removeAttribute("data-bytes");
+        fileInput.removeAttribute("data-filename");
+        return;
+      } else {
+        const bytes = new Uint8Array(Array.from(text).map(c => c.charCodeAt(0)));
+        const encBytes = extendedVigenereEncrypt(bytes, keyInput);
+        result = Array.from(encBytes).map(b => String.fromCharCode(b)).join('');
+      }
       break;
     case "affine":
       const [a, b] = keyInput.split(',').map(n => parseInt(n.trim()));
@@ -302,10 +375,14 @@ function processEncryption() {
 function processDecryption() {
   const cipherType = document.getElementById("cipherSelect").value;
   const keyInput = document.getElementById("keyInput").value;
-  const text = document.getElementById("textInput").value.trim(); // Get text from the text box
+  const text = document.getElementById("textInput").value.trim();
+  const fileInput = document.getElementById("fileInput");
+  const fileName = fileInput.getAttribute("data-filename");
+  const dataBytes = fileInput.getAttribute("data-bytes");
+
   let result = '';
 
-  if (!text) {
+  if (!text && !dataBytes) {
     alert("Masukkan teks atau unggah file terlebih dahulu.");
     return;
   }
@@ -318,9 +395,28 @@ function processDecryption() {
       result = autoKeyDecrypt(text, keyInput);
       break;
     case "extended":
-      const bytes = new Uint8Array(Array.from(text).map(c => c.charCodeAt(0)));
-      const decBytes = extendedVigenereDecrypt(bytes, keyInput);
-      result = Array.from(decBytes).map(b => String.fromCharCode(b)).join('');
+      if (dataBytes) {
+        const bytes = new Uint8Array(JSON.parse(dataBytes));
+        const decBytes = extendedVigenereDecrypt(bytes, keyInput);
+        const blob = new Blob([decBytes]);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        let originalName = fileName;
+        if (originalName && originalName.startsWith("encrypted_")) {
+          originalName = originalName.substring("encrypted_".length);
+        }
+        a.download = originalName ? `decrypted_${originalName}` : "decrypted_file";
+        a.click();
+        URL.revokeObjectURL(url);
+        fileInput.removeAttribute("data-bytes");
+        fileInput.removeAttribute("data-filename");
+        return;
+      } else {
+        const bytes = new Uint8Array(Array.from(text).map(c => c.charCodeAt(0)));
+        const decBytes = extendedVigenereDecrypt(bytes, keyInput);
+        result = Array.from(decBytes).map(b => String.fromCharCode(b)).join('');
+      }
       break;
     case "affine":
       const [a2, b2] = keyInput.split(',').map(n => parseInt(n.trim()));
