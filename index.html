@@ -2,54 +2,67 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Program Enkripsi – Dekripsi Multi-Cipher</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Program Enkripsi – Dekripsi Multi-Cipher</h1>
-  
-  <div class="section">
-    <label for="cipherSelect">Pilih Cipher:</label>
-    <select id="cipherSelect">
-      <option value="vigenere">Vigenere Standard</option>
-      <option value="autokey">Auto-Key Vigenere</option>
-      <option value="extended">Extended Vigenere</option>
-      <option value="affine">Affine Cipher</option>
-      <option value="playfair">Playfair Cipher</option>
-      <option value="hill">Hill Cipher (2x2)</option>
-    </select>
-  </div>
+  <div class="container">
+    <header>
+      <h1>Enkripsi & Dekripsi</h1>
+      <p>Pilih cipher dan masukkan data untuk memulai.</p>
+    </header>
 
-  <div class="section">
-    <label for="keyInput">Kunci:</label>
-    <input type="text" id="keyInput" placeholder="Masukkan kunci">
-    <small id="keyHint"></small>
-  </div>
+    <main>
 
-  <div class="section">
-    <label>Pesan (Plaintext/Ciphertext):</label>
-    <textarea id="textInput" placeholder="Tulis pesan di sini atau upload file..."></textarea>
-    <br>
-    <input type="file" id="fileInput" onchange="processFileInput()">
-  </div>
+      <div class="dropdown-container">
+      <div class="form-section">
+        <label for="cipherSelect">Pilih Cipher:</label>
+        <select id="cipherSelect">
+          <option value="vigenere">Vigenere Standard</option>
+          <option value="autokey">Auto-Key Vigenere</option>
+          <option value="extended">Extended Vigenere</option>
+          <option value="affine">Affine Cipher</option>
+          <option value="playfair">Playfair Cipher</option>
+          <option value="hill">Hill Cipher (2x2)</option>
+        </select>
+      </div>
+    
+      <div class="form-section">
+        <label for="cipherTextFormat">Tampilan Cipherteks:</label>
+        <select id="cipherTextFormat">
+          <option value="none">Tanpa spasi</option>
+          <option value="group5">Kelompok 5-huruf</option>
+        </select>
+      </div>
+      </div>
 
-  <div class="section">
-    <label>Tampilan Cipherteks:</label>
-    <select id="cipherTextFormat">
-      <option value="none">Tanpa spasi</option>
-      <option value="group5">Kelompok 5-huruf</option>
-    </select>
-  </div>
+      <div class="form-section">
+        <label for="keyInput">Kunci:</label>
+        <input type="text" id="keyInput" placeholder="Masukkan kunci">
+        <small id="keyHint"></small>
+      </div>
 
-  <div class="section">
-    <button onclick="processEncryption()">Encrypt</button>
-    <button onclick="processDecryption()">Decrypt</button>
-    <button onclick="downloadText()">Save</button>
-  </div>
+      <div class="pesanresult">
+        <div class="form-section">
+          <div style="height: 20px;"></div>
+          <label for="textInput">Pesan (Plaintext/Ciphertext):</label>
+          <textarea id="textInput" placeholder="Tulis pesan di sini atau upload file..."></textarea>
+          <input type="file" id="fileInput" onchange="processFileInput()">
+        </div>
 
-  <div class="section">
-    <label>Output Enkripsi:</label>
-    <textarea id="outputArea" readonly></textarea>
+        <div class="output-section">
+          <label for="outputArea">Output:</label>
+          <textarea id="outputArea" readonly></textarea>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="processEncryption()">Encrypt</button>
+        <button onclick="processDecryption()">Decrypt</button>
+        <button onclick="downloadText()">Save</button>
+      </div>
+    </main>
   </div>
 
   <script src="script.js"></script>
