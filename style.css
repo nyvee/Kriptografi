@@ -1,20 +1,9 @@
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #fff;
+  background-color: #efefef;
   color: #000;
   margin: 0;
   padding: 0;
-}
-
-select {
-  width: 50%;
-  max-width: 200px;
-  min-width: 200px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
-  color: #000;
 }
 
 .container {
@@ -39,8 +28,8 @@ header p {
 }
 
 main {
-  background-color: #f9f9f9;
-  padding: 30px;
+  background-color: #ffffff;
+  padding: 20px 40px 20px 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -91,7 +80,7 @@ button {
 }
 
 button:hover {
-  background-color: #ccc;
+  background-color: #4c4c4c;
 }
 
 .button-group {
@@ -138,11 +127,27 @@ textarea, input[type="file"] {
 }
 
 select {
-  width: auto;
-  min-width: 150px;
-  padding: 10px;
-  border: 1px solid #eee;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  min-width: 200px;
+  color: #fff;
+  background: #000000 url('data:image/svg+xml;utf8,<svg fill="white" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center/16px 16px;
+  padding-right: 10px;
+}
+
+.sec-btn {
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  padding: 10px 20px;
+  margin-right: 10px;
   border-radius: 5px;
-  background-color: #000;
-  color: #eee;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  transition: background-color 0.3s;
+}
+
+.sec-btn:hover {
+  background-color: #f0f0f0;
 }
